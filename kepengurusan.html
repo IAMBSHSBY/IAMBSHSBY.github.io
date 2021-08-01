@@ -9,9 +9,51 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
 
     <title>IAMBSH SBY</title>
+    <style>
+      .listImg{
+          height: 200px;
+          width: 200px;
+      }
+      @media screen and (min-width:300px){
+        .listImg{
+          width: 50px;
+          height: 50px;
+        }
+      }
+
+      @media screen and (min-width:800px){
+        .listImg{
+          height: 200px;
+          width: 200px;
+        }
+      }
+
+    </style>
   </head>
 
   <body id="body">
+    <!-- FIREBASE SET UP -->
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-storage.js"></script>
+
+    <script>
+      // Your web app's Firebase configuration
+      var firebaseConfig = {
+        apiKey: "AIzaSyA0ZRR_fcpc9HhzUpU6UpoDCeXAZcY2zXs",
+        authDomain: "iambshsby-e7433.firebaseapp.com",
+        databaseURL: "https://iambshsby-e7433-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "iambshsby-e7433",
+        storageBucket: "iambshsby-e7433.appspot.com",
+        messagingSenderId: "149078740836",     
+        appId: "1:149078740836:web:79095da6bffa9775523471" 
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+    </script>
+
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
       <a class="navbar-brand" href="#">IAMBSH Surabaya</a>
@@ -47,37 +89,57 @@
     </div>
 
     <div class="container">
-      <table class="table table-striped">
+      <table class="table table-striped table-sm">
         <thead>
           <tr>
-            <th scope="col">#</th>
+            <th scope="col"></th>
             <th scope="col">Foto</th>
-            <th scope="col">Jabatan</th>
             <th scope="col">Nama</th>
+            <th scope="col">Jabatan</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <th scope="row">1</th>
-            <td><img src="Images/profile2.jpg" class="img-thumbnail" height="30%" width="30%"></td>
-            <td>(Jabatan)</td>
-            <td>Fulan Fulan</td>
-          </tr>
-          <tr>
-            <th scope="row">1</th>
-            <td><img src="Images/profile2.jpg" class="img-thumbnail" height="30%" width="30%"></td>
-            <td>(Jabatan)</td>
-            <td>Fulan Fulan</td>
-          </tr>
-          <tr>
-            <th scope="row">1</th>
-            <td><img src="Images/profile2.jpg" class="img-thumbnail" height="30%" width="30%"></td>
-            <td>(jabatan)</td>
-            <td>Fulan Fulan</td>
-          </tr>
+        <tbody id="tbody1">
+
         </tbody>
       </table>
     </div>
+
+    <script>
+      // Get All Data from Firebase
+      function SelectAllData(){
+        firebase.database().ref('Users').once('value',
+        function(AllUsers){
+          AllUsers.forEach(
+            function (currentUser){
+              var name = currentUser.val().Name;
+              var status = currentUser.val().Status;
+              var imgLink = currentUser.val().Link;
+
+              AddItemsToTable(name, status, imgLink);
+            }
+          )
+        })
+      }
+      window.onload = SelectAllData;
+
+      // Filling the Table
+      function AddItemsToTable(name, status, imgLink){
+        var tbody = document.getElementById('tbody1');
+        var trow = document.createElement('tr');
+        var td1 = document.createElement('td');
+        var img = document.createElement('img');
+        var td2 = document.createElement('td');
+        var td3 = document.createElement('td');
+        var td4 = document.createElement('td');
+        img.classList.add("listImg");
+        img.src = imgLink;
+        td3.innerHTML = name;
+        td4.innerHTML = status;
+        td2.appendChild(img);
+        trow.appendChild(td1); trow.appendChild(td2); trow.appendChild(td3); trow.appendChild(td4);
+        tbody.appendChild(trow);
+      }
+    </script>
 
     <!-- Optional JavaScript; choose one of the two! -->
 
