@@ -1,0 +1,128 @@
+<html>
+    <head>
+
+    </head>
+    <style>
+        input{
+            text-transform: uppercase;
+        }
+    </style>
+    <body>
+        <!-- FIREBASE SET UP -->
+        <!-- The core Firebase JS SDK is always required and must be listed first -->
+        <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-database.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-storage.js"></script>
+       
+
+        <!-- TODO: Add SDKs for Firebase products that you want to use
+            https://firebase.google.com/docs/web/setup#available-libraries -->
+
+        <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyA0ZRR_fcpc9HhzUpU6UpoDCeXAZcY2zXs",
+            authDomain: "iambshsby-e7433.firebaseapp.com",
+            databaseURL: "https://iambshsby-e7433-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "iambshsby-e7433",
+            storageBucket: "iambshsby-e7433.appspot.com",
+            messagingSenderId: "149078740836",     
+            appId: "1:149078740836:web:79095da6bffa9775523471" 
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        var imgName, imgUrl;
+        var files = [];
+        var reader;
+
+        function selectImage(e){
+            var input = document.createElement('input');
+                input.type='file';
+
+                input.onchange = e =>{
+                    files = e.target.files;
+                    reader = new FileReader();
+                    reader.onload = function(){
+                        document.getElementById("myImg").src = reader.result;
+                    }
+                    reader.readAsDataURL(files[0]);
+                }
+                input.click();
+        }
+
+        function writeData(){   
+            /*
+            firebase.database().ref('user').set({
+            name: "admin",
+            position: "admin"
+            });
+            alert("Data Saved");
+            */
+
+            imgName = document.getElementById('name').value.toUpperCase();
+                var uploadTask = firebase.storage().ref('Images/'+imgName+".png").put(files[0]);
+
+                uploadTask.on('state_changed', function(snapshot){
+                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    document.getElementById('upProgress').innerHTML = 'Upload '+progress+'%';
+                },
+
+                // Error handling
+                function(error){
+                    alert('Error in saving the image');
+                },
+
+                // Sumbit image link to database
+                function(){
+                    uploadTask.snapshot.ref.getDownloadURL().then(function(url){
+                        imgUrl = url;
+                        status = document.getElementById('status').value.toUpperCase();
+
+                        firebase.database().ref('Users/'+imgName).set({
+                            Name: imgName,
+                            Status: status.toUpperCase(),
+                            Link: imgUrl
+                        });
+                        alert('image added succesfully');
+                    });
+                }
+                );
+        }
+
+        function retrieveData(){
+            imgName = document.getElementById('name').value.toUpperCase();
+            firebase.database().ref('Images/'+imgName).on('value', function(snapshot){
+                document.getElementById('myImg').src = snapshot.val().link;
+            })
+        }
+        </script>
+
+        <h1>INPUT DATA</h1>
+        <img id="myImg" style="width: 300px; height: 300px;"><label id="upProgress" style="font-size: 50px;"></label><br><br>
+        <button id="selectImg" onclick="selectImage()">SELECT IMAGE</button>
+        <button id="uploadImg">UPLOAD IMAGE</button>
+        <button id="retrieveImg" onclick="retrieveData()">RETRIEVE IMAGE</button><br><br>
+        <input type="text" id="name" name="name" placeholder="Nama">
+        <input type="text" id="status" name="status" placeholder="Status"><br><br>
+        <button onclick= 'writeData()' style="width: 300px;height: 50px; font-size: 25px;">SUBMIT</button>
+
+        <script>
+            
+
+            // Select Image
+
+
+            // Upload picture to Firebase
+            document.getElementById('uploadImg').onclick = function(){
+                
+            }
+
+            // Retrieve Data
+            document.getElementById('retrieveImg').onclick = function(){
+                
+            }
+        </script>
+    </body>
+</html>
